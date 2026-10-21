@@ -1,0 +1,1 @@
+Place short royalty-free WAV/MP3 fixtures here for smoke tests. No audio fixture is included in this scaffold.\n

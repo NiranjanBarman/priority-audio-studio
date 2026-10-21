@@ -1,0 +1,73 @@
+{
+  "name": "priority-audio-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Loud, non-stop local music routed to BlueStacks mic via VB-CABLE.",
+  "author": "Priority Audio Studio",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:vite\" \"npm:dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on tcp:5173 && electron .",
+    "build": "vite build",
+    "start": "electron .",
+    "build:native": "node-gyp rebuild --directory audio-engine/addon"
+  },
+  "dependencies": {
+    "lucide-react": "^0.400.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "concurrently": "^9.0.1",
+    "electron": "^30.5.1",
+    "electron-builder": "26.15.3",
+    "node-addon-api": "^8.0.0",
+    "node-gyp": "^10.2.0",
+    "vite": "^5.4.8",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.priorityaudio.studio",
+    "productName": "Priority Audio Studio",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "audio-engine/build/Release",
+        "to": "native",
+        "filter": [
+          "*.node"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Priority Audio Studio"
+    }
+  }
+}

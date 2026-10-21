@@ -1,0 +1,324 @@
+/**
+ * Priority Audio Studio — component polish layer.
+ *
+ * Loaded AFTER globals.css. Adds:
+ *   - Range slider full styling (WebKit + fallback)
+ *   - Focus-visible rings for accessibility
+ *   - Custom scrollbar
+ *   - Transition timing where globals uses defaults
+ *   - Toast entrance animation
+ *   - Card hover micro-interaction
+ *   - EQ vertical slider support
+ *
+ * Keep this file additive — do not redefine what globals already sets,
+ * only extend or refine.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. RANGE SLIDER — full custom styling
+   ═══════════════════════════════════════════════════════════════════ */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+/* WebKit track */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--panel-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+
+/* WebKit thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  margin-top: -6px;
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+  box-shadow: 0 0 0 0 var(--accent-glow);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 5px var(--accent-glow);
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+  background: var(--muted);
+  cursor: not-allowed;
+}
+
+input[type="range"]:disabled::-webkit-slider-runnable-track {
+  opacity: 0.5;
+}
+
+/* Firefox fallback */
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--panel-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  transition: transform var(--dur-fast) var(--ease-out);
+  cursor: pointer;
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. VERTICAL RANGE — used by Equalizer's 10-band sliders
+   ═══════════════════════════════════════════════════════════════════ */
+input[type="range"][style*="vertical-lr"],
+input[type="range"][style*="vertical-rl"] {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+input[type="range"][style*="vertical-lr"]::-webkit-slider-runnable-track,
+input[type="range"][style*="vertical-rl"]::-webkit-slider-runnable-track {
+  width: 4px;
+  height: 100%;
+}
+
+input[type="range"][style*="vertical-lr"]::-webkit-slider-thumb,
+input[type="range"][style*="vertical-rl"]::-webkit-slider-thumb {
+  margin-top: 0;
+  margin-left: -6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. FOCUS-VISIBLE — accessibility (keyboard navigation)
+   ═══════════════════════════════════════════════════════════════════ */
+*:focus {
+  outline: none;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. CUSTOM SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--panel-3);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Sidebar's scrollbar is narrower */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  border-width: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. SELECT — dropdown arrow styling
+   ═══════════════════════════════════════════════════════════════════ */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239a9aab' d='M6 9L2 4h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+select:hover:not(:disabled) {
+  cursor: pointer;
+}
+
+select:disabled {
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. CARD HOVER — subtle lift on interactive cards
+   ═══════════════════════════════════════════════════════════════════ */
+.card.interactive {
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.card.interactive:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. TOAST ANIMATION — slide-in from bottom-right
+   ═══════════════════════════════════════════════════════════════════ */
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+/* The Toast component uses inline styles. If you add a class later,
+   apply this animation: animation: toast-slide-in var(--dur-base) var(--ease-out); */
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. LOADING STATES — skeleton pulse (used by pages while probing)
+   ═══════════════════════════════════════════════════════════════════ */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.skeleton {
+  background: var(--panel-2);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.5s var(--ease-inout) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. FADE-IN — used by pages on mount (add class="fade-in" to wrapper)
+   ═══════════════════════════════════════════════════════════════════ */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fade-in {
+  animation: fade-in var(--dur-base) var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. STRIP / MIXER polish
+   ═══════════════════════════════════════════════════════════════════ */
+/* SourceStrip container gets a subtle hover */
+.card .meter {
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+
+/* Priority rank badge hover */
+[title*="priority"] {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+[title*="priority"]:hover {
+  transform: scale(1.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. LOG VIEWER — monospace scroll area
+   ═══════════════════════════════════════════════════════════════════ */
+.mono.small::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mono.small::-webkit-scrollbar-thumb {
+  border-width: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   12. CLIP LED — reduce motion users get no pulse
+   ═══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .clip-led.on {
+    animation: none;
+    opacity: 1;
+  }
+
+  .fade-in {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   13. PATH DIAGRAM — arrow + node polish
+   ═══════════════════════════════════════════════════════════════════ */
+[style*="border: 1px solid var(--accent)"] {
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   14. SELECTION HIGHLIGHT
+   ═══════════════════════════════════════════════════════════════════ */
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+/* Allow text selection in log areas, text inputs, and pre blocks */
+input[type="text"],
+input[type="number"],
+textarea,
+.mono.small,
+pre,
+code {
+  user-select: text;
+}
