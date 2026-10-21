@@ -1,17 +1,16 @@
 import React from 'react';
-import { Music, Radio, Mic, Cable, Headphones } from 'lucide-react';
+import { Music, Mic, Cable, Headphones } from 'lucide-react';
 
 /**
  * @param {object}   props
  * @param {boolean}  props.fileActive
- * @param {boolean}  props.systemActive
  * @param {boolean}  props.micActive
  * @param {boolean}  props.monitorActive
  * @param {string}   props.outputLabel
  * @param {string}   props.monitorLabel
  */
 export default function PathDiagram({
-  fileActive, systemActive, micActive, monitorActive,
+  fileActive, micActive, monitorActive,
   outputLabel, monitorLabel
 }) {
   const Node = ({ active, icon: Icon, label }) => (
@@ -43,7 +42,6 @@ export default function PathDiagram({
       <h3 className="card-title">Routing path</h3>
       <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
         <Node active={fileActive}    icon={Music}  label="Local file" />
-        <Node active={systemActive}  icon={Radio}  label="System" />
         <Node active={micActive}     icon={Mic}    label="Mic" />
         <Arrow />
         <Node active={true}          icon={Music}  label="Priority Mixer" />

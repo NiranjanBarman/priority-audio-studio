@@ -84,6 +84,21 @@ export class FilePlayer {
     });
   }
 
+  unload() {
+    this.stop();
+    this.audioEl.removeAttribute('src');
+    this.audioEl.load();
+    if (this.currentUrl) URL.revokeObjectURL(this.currentUrl);
+    this.currentUrl = null;
+    this.onState({
+      currentTrack: null,
+      currentTime: 0,
+      duration: 0,
+      playing: false,
+      error: null
+    });
+  }
+
   async play() {
     if (this.ctx.state === 'suspended') await this.ctx.resume();
     await this.audioEl.play();

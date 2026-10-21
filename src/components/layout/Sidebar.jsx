@@ -33,6 +33,25 @@ export default function Sidebar({ activeTab, onTabChange }) {
       <div className="sidebar-tag">
         Auto-ducking intentionally disabled.
       </div>
+      <div
+        style={{
+          marginTop: 12,
+          padding: '0 12px 12px',
+          fontSize: 11,
+          lineHeight: 1.5
+        }}
+      >
+        <div>Developed by Niranjan</div>
+        <div className="muted">For latest version follow me on GitHub:</div>
+        <a
+          href="https://github.com/NiranjanBarman"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'var(--accent)', fontSize: 11 }}
+        >
+          github.com/NiranjanBarman
+        </a>
+      </div>
     </aside>
   );
 }

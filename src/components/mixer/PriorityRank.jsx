@@ -14,7 +14,7 @@ export default function PriorityRank({ rank }) {
   const color = RANK_COLORS[rank] || RANK_COLORS[3];
   const tooltip = {
     1: 'Highest priority — never ducks',
-    2: 'Mid priority — ducks against rank 1 only',
+    2: 'NORMAL priority — mixed alongside Rank 1',
     3: 'Low priority — ducks against ranks 1 & 2'
   }[rank] || '';
 

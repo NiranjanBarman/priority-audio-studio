@@ -23,7 +23,7 @@ export default function SoloMuteRow({ sources, onMuteToggle, onSoloToggle }) {
               borderRadius: 'var(--radius-sm)',
               opacity: inactive ? 0.5 : 1
             }}
-            title={inactive ? `${src.label} — inactive until M2` : undefined}
+            title={inactive ? `${src.label} — currently inactive` : undefined}
           >
             <span className="small">{src.label}</span>
             <button
@@ -35,7 +35,7 @@ export default function SoloMuteRow({ sources, onMuteToggle, onSoloToggle }) {
               }}
               onClick={() => onMuteToggle(src.key)}
               disabled={inactive}
-              title={inactive ? 'Not available until M2' : (src.muted ? 'Unmute' : 'Mute')}
+              title={inactive ? 'Source is inactive' : (src.muted ? 'Unmute' : 'Mute')}
             >
               M
             </button>
@@ -48,7 +48,7 @@ export default function SoloMuteRow({ sources, onMuteToggle, onSoloToggle }) {
               }}
               onClick={() => onSoloToggle(src.key)}
               disabled={inactive}
-              title={inactive ? 'Not available until M2' : (src.solo ? 'Unsolo' : 'Solo')}
+              title={inactive ? 'Source is inactive' : (src.solo ? 'Unsolo' : 'Solo')}
             >
               S
             </button>

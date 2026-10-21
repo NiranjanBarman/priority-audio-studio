@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
+import { PlaylistProvider } from './context/PlaylistContext.jsx';
 
 // ── CSS imports (ORDER MATTERS) ────────────────────────────────────────
 import './styles/theme.css';
@@ -28,7 +29,9 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <App />
+    <PlaylistProvider>
+      <App />
+    </PlaylistProvider>
   </React.StrictMode>
 );
 

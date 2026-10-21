@@ -5,7 +5,8 @@ import PeakMeter from '../meters/PeakMeter.jsx';
 /**
  * @param {object}   props
  * @param {string}   props.label
- * @param {number}   props.gain          — 0..1
+ * @param {number}   props.gain          — 0..gainMax
+ * @param {number}   [props.gainMax=1]
  * @param {boolean}  props.muted
  * @param {boolean}  props.solo
  * @param {number}   props.peak          — 0..1
@@ -15,7 +16,7 @@ import PeakMeter from '../meters/PeakMeter.jsx';
  * @param {Function} props.onSoloToggle
  */
 export default function SourceStrip({
-  label, gain, muted, solo, peak = 0, disabled,
+  label, gain, gainMax = 1, muted, solo, peak = 0, disabled,
   onGainChange, onMuteToggle, onSoloToggle
 }) {
   return (
@@ -54,7 +55,7 @@ export default function SourceStrip({
       <input
         type="range"
         min="0"
-        max="1"
+        max={gainMax}
         step="0.01"
         value={gain}
         onChange={(e) => onGainChange(parseFloat(e.target.value))}

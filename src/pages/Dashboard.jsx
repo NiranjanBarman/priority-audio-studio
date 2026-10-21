@@ -24,13 +24,17 @@ import DeviceSelect from '../components/routing/DeviceSelect.jsx';
 
 export default function Dashboard() {
   const { engine, state, ready } = useAudioEngine();
-  const { outputs, cableInput, error: devError, refresh } = useDevices();
+  const { outputs, inputs, cableInput, error: devError, refresh } = useDevices();
   const { peak, clip } = useMeters({ hz: 30 });
   const { settings, set: setSetting } = useSettings();
 
   const [toast, setToast] = useState(null);
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState(null);
+  const [micDeviceId, setMicDeviceId] = useState(
+    () => engine.state.micDeviceId || ''
+  );
+  const [micGain, setMicGain] = useState(() => engine.micGain);
   const autoPickedRef = useRef(false);
 
   // Auto-pick CABLE Input as output on first load
@@ -184,6 +188,43 @@ export default function Dashboard() {
     });
   }
 
+  async function handleMicToggle(enabled) {
+    try {
+      if (enabled) {
+        const started = await ensureStarted();
+        if (!started) return;
+      }
+      await engine.enableMic(micDeviceId, enabled);
+      setToast({
+        level: 'success',
+        message: `Microphone ${enabled ? 'enabled' : 'disabled'}`
+      });
+    } catch (e) {
+      setToast({ level: 'error', message: `Microphone failed: ${e.message}` });
+    }
+  }
+
+  async function handleMicDeviceChange(deviceId) {
+    setMicDeviceId(deviceId);
+    if (!state.micEnabled) return;
+
+    try {
+      await engine.enableMic(deviceId, true);
+      const label = inputs.find((device) => device.deviceId === deviceId)?.label;
+      setToast({
+        level: 'success',
+        message: `Microphone input → ${label || 'default input'}`
+      });
+    } catch (e) {
+      setToast({ level: 'error', message: `Microphone failed: ${e.message}` });
+    }
+  }
+
+  function handleMicGain(value) {
+    setMicGain(value);
+    engine.setMicGain(value);
+  }
+
   const routedToCable =
     cableInput &&
     settings.outputDeviceId &&
@@ -275,6 +316,47 @@ export default function Dashboard() {
             onPlay={handlePlay}
             onPause={handlePause}
             onStop={handleStop}
+          />
+        </div>
+      </div>
+
+      {/* ─── M2 microphone mixed into the existing output graph ─────── */}
+      <div className="card">
+        <h3 className="card-title">Microphone (M2)</h3>
+        <div className="row" style={{ gap: 16, marginBottom: 14 }}>
+          <span className="small">
+            <strong>Music: HIGH Priority (Rank 1)</strong>
+          </span>
+          <span className="small muted">
+            Mic: NORMAL Priority (Rank 2)
+          </span>
+        </div>
+        <div className="grid-2">
+          <div>
+            <Toggle
+              label="Enable microphone"
+              checked={state.micEnabled}
+              onChange={handleMicToggle}
+            />
+            <div style={{ marginTop: 12 }}>
+              <DeviceSelect
+                label="Physical microphone input"
+                devices={inputs}
+                value={micDeviceId}
+                onChange={handleMicDeviceChange}
+                onRefresh={refresh}
+                allowEmpty
+                emptyLabel="— Windows default microphone —"
+              />
+            </div>
+          </div>
+          <Slider
+            label="Mic gain"
+            value={micGain}
+            min={0}
+            max={2}
+            step={0.01}
+            onChange={handleMicGain}
           />
         </div>
       </div>

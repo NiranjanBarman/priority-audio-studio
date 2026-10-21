@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Trash2, Play, Music, ChevronUp, ChevronDown, FolderPlus } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
-import { usePlaylist } from '../hooks/usePlaylist.js';
+import { usePlaylist } from '../context/PlaylistContext.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Toast from '../components/layout/Toast.jsx';
 
@@ -54,6 +54,7 @@ export default function Library() {
 
   function handleRemove(trackId) {
     const track = tracks.find((t) => t.id === trackId);
+    if (activeId === trackId) engine.unloadFile();
     remove(trackId);
     if (track) {
       setToast({ level: 'info', message: `Removed: ${track.name}` });
@@ -72,6 +73,7 @@ export default function Library() {
 
   function handleClear() {
     if (tracks.length === 0) return;
+    if (activeId) engine.unloadFile();
     clear();
     setToast({ level: 'info', message: 'Playlist cleared' });
   }
@@ -186,10 +188,9 @@ export default function Library() {
       {/* Honest M1 note */}
       <div className="card">
         <div className="small muted">
-          <strong>M1 note:</strong> Files are stored in memory only. On app restart,
-          the playlist shows names but you must re-add files to play. M2 replaces
-          this with <span className="mono">pas-audio://</span> streaming — paths
-          persist across sessions.
+          <strong>M1 note:</strong> Track files stay in memory while the app is
+          running, including when you switch tabs. After restarting the app,
+          re-add the files to play them again.
         </div>
       </div>
 

@@ -91,8 +91,7 @@ export default function Routing() {
 
       <PathDiagram
         fileActive={state.playing}
-        systemActive={false}
-        micActive={false}
+        micActive={state.micEnabled}
         monitorActive={settings.monitorEnabled}
         outputLabel={labelFor(settings.outputDeviceId)}
         monitorLabel={labelFor(settings.monitorDeviceId) || 'Monitor'}

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Info, Music, Radio, Mic, Shield } from 'lucide-react';
+import { Info, Music, Mic, Shield } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
 import { useMeters } from '../hooks/useMeters.js';
 import { useSettings } from '../hooks/useSettings.js';
@@ -17,16 +17,20 @@ export default function Mixer() {
 
   const [sources, setSources] = useState({
     music:  { rank: 1, label: 'Music', gain: settings.volume, muted: false, solo: false, active: true,  milestone: 'M1' },
-    system: { rank: 2, label: 'System (Chrome)', gain: 1.0, muted: false, solo: false, active: false, milestone: 'M2' },
-    mic:    { rank: 3, label: 'Microphone', gain: 1.0, muted: false, solo: false, active: false, milestone: 'M2' }
+    mic:    { rank: 2, label: 'Microphone', gain: engine.micGain, muted: false, solo: false, active: state.micEnabled, milestone: 'M2' }
   });
 
   useEffect(() => {
     setSources((prev) => ({
       ...prev,
-      music: { ...prev.music, gain: state.volume }
+      music: { ...prev.music, gain: state.volume },
+      mic: {
+        ...prev.mic,
+        gain: engine.micGain,
+        active: state.micEnabled
+      }
     }));
-  }, [state.volume]);
+  }, [state.volume, state.micEnabled, engine]);
 
   function update(key, patch) {
     setSources((prev) => ({
@@ -42,6 +46,8 @@ export default function Mixer() {
       // AND persist to settings so Dashboard + reload pick it up.
       engine.setVolume(val);
       setSetting('volume', val);
+    } else if (key === 'mic') {
+      engine.setMicGain(val);
     }
   }
 
@@ -51,6 +57,8 @@ export default function Mixer() {
       if (key === 'music') {
         // Mute is transient — do NOT save to settings.
         engine.setVolume(next ? 0 : prev.music.gain);
+      } else if (key === 'mic') {
+        engine.setMicGain(next ? 0 : prev.mic.gain);
       }
       return { ...prev, [key]: { ...prev[key], muted: next } };
     });
@@ -122,7 +130,6 @@ export default function Mixer() {
             >
               <div className="row" style={{ gap: 6 }}>
                 {s.key === 'music' && <Music size={13} />}
-                {s.key === 'system' && <Radio size={13} />}
                 {s.key === 'mic' && <Mic size={13} />}
                 <span className="small muted">{s.milestone}</span>
               </div>
@@ -131,6 +138,7 @@ export default function Mixer() {
             <SourceStrip
               label={s.label}
               gain={s.gain}
+              gainMax={s.key === 'mic' ? 2 : 1}
               muted={s.muted}
               solo={s.solo}
               peak={s.key === 'music' ? peak : 0}
@@ -168,11 +176,8 @@ export default function Mixer() {
             scales down, never goes silent against lower-rank sources.
           </li>
           <li>
-            <strong>Rank 2 (System)</strong> — plays alongside music. If music +
-            system would clip, only system ducks. Music is untouched.
-          </li>
-          <li>
-            <strong>Rank 3 (Mic)</strong> — lowest priority. Same rule as rank 2.
+            <strong>Rank 2 (Microphone)</strong> — mixed alongside music without
+            reducing the Rank 1 music level.
           </li>
           <li>
             <strong>No auto-ducking:</strong> there is no code path anywhere in

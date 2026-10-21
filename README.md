@@ -10,16 +10,19 @@ audio chain and routes it to BlueStacks as a virtual microphone via VB-CABLE.
 ## What This App Does
 
 - 🎵 Plays local music (MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, WEBM)
+- 🎤 Mixes an optional physical microphone with music (Music Rank 1, Mic Rank 2)
+- 📂 Keeps selected music files and playback alive while switching app tabs
 - 🔊 Processes through an aggressive anti-duck chain (compressor + limiter + makeup gain)
 - 🎚️ Injects a -55 dBFS DTX tone so Free Fire's VAD never sees silence
 - 🎤 Routes processed output to VB-CABLE's `CABLE Input` → BlueStacks reads it as `CABLE Output`
 - ❌ **No auto-ducking. No auto-volume-reduction. Ever.**
 
-## What This App Does NOT Do (M1)
+Playlist files remain in memory for the current app session. After restarting the
+app, re-add the files to play them again.
 
-- ❌ No system/Chrome loopback capture (M2)
-- ❌ No priority mixer (M2)
-- ❌ No 10-band EQ (M3)
+## What This App Does NOT Do
+
+- ❌ No system/Chrome loopback capture
 - ❌ No custom virtual audio driver
 - ❌ No server-side Free Fire control (impossible — see Limitations)
 
@@ -32,7 +35,7 @@ audio chain and routes it to BlueStacks as a virtual microphone via VB-CABLE.
 | Node.js | 22 LTS | Build + dev |
 | VB-CABLE | latest | Virtual audio cable — MANDATORY |
 | BlueStacks 5 | 5.20+ | Target runtime |
-| Visual Studio Build Tools | 2022 | Only for M2+ C++ engine |
+| Visual Studio Build Tools | 2022 | Required to rebuild the native audio addon |
 
 ---
 

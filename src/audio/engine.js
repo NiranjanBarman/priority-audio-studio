@@ -2,6 +2,7 @@ import { buildGraph } from './graph.js';
 import { FilePlayer } from './filePlayer.js';
 import { Meters } from './meters.js';
 import { AntiDuck } from './antiDuck.js';
+import { MicCapture } from './micCapture.js';
 import { log } from '../services/logger.js';
 
 /**
@@ -23,6 +24,8 @@ export class AudioEngine {
     this.player = null;
     this.meters = null;
     this.antiDuck = null;
+    this.mic = null;
+    this.micGain = 1;
 
     this.monitorEl = null;
     this._initPromise = null;
@@ -38,6 +41,8 @@ export class AudioEngine {
       preset: 'antiDuck',
       outputDeviceId: '',
       monitorEnabled: false,
+      micEnabled: false,
+      micDeviceId: '',
       peak: 0,
       clip: false,
       error: null
@@ -87,6 +92,8 @@ export class AudioEngine {
     this.graph = buildGraph(this.ctx);
     this.meters = new Meters(this.graph.analyser);
     this.antiDuck = new AntiDuck(this.ctx, this.graph);
+    this.mic = new MicCapture(this.ctx, this.graph.sourceInput);
+    this.mic.setGain(this.micGain);
 
     this.player = new FilePlayer(this.ctx, this.graph.sourceInput, (s) => {
       this._set(s);
@@ -187,6 +194,10 @@ export class AudioEngine {
     return this.player.load(file);
   }
 
+  unloadFile() {
+    if (this.player) this.player.unload();
+  }
+
   async play() {
     await this.init();
     return this.player.play();
@@ -233,6 +244,35 @@ export class AudioEngine {
     log(`DTX injector → ${on ? 'ON' : 'OFF'}`);
   }
 
+  async enableMic(deviceId, enabled) {
+    await this.init();
+
+    if (!enabled) {
+      this.mic.stop();
+      this._set({ micEnabled: false, error: null });
+      log('Microphone OFF');
+      return;
+    }
+
+    try {
+      await this.mic.start(deviceId);
+      this.mic.setGain(this.micGain);
+      this._set({ micEnabled: true, micDeviceId: deviceId || '', error: null });
+      log(`Microphone ON · ${deviceId || 'default input'}`);
+    } catch (error) {
+      this.mic.stop();
+      this._set({ micEnabled: false, error: error.message });
+      log(`Microphone start failed: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+
+  setMicGain(value) {
+    const gain = Math.max(0, Math.min(2, Number(value) || 0));
+    this.micGain = gain;
+    if (this.mic) this.mic.setGain(gain);
+  }
+
   // ── Shutdown ───────────────────────────────────────────────────────
 
   async dispose() {
@@ -243,6 +283,7 @@ export class AudioEngine {
         this.monitorEl = null;
       }
       if (this.meters) this.meters.stop();
+      if (this.mic) this.mic.stop();
       if (this.player) this.player.dispose();
       if (this.antiDuck) this.antiDuck.dispose();
       if (this.ctx) await this.ctx.close();
@@ -255,9 +296,16 @@ export class AudioEngine {
     this.player = null;
     this.meters = null;
     this.antiDuck = null;
+    this.mic = null;
     this._initPromise = null;
 
-    this._set({ ready: false, playing: false, peak: 0, clip: false });
+    this._set({
+      ready: false,
+      playing: false,
+      micEnabled: false,
+      peak: 0,
+      clip: false
+    });
   }
 }
 
