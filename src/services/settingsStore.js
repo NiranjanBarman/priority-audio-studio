@@ -21,6 +21,7 @@ export const DEFAULTS_SETTINGS = Object.freeze({
   outputDeviceId: '',
   monitorEnabled: false,
   monitorDeviceId: '',
+  micEffect: 'normal',
 
   // UI
   logLevel: 'info',
@@ -81,6 +82,7 @@ function coerce(raw) {
     outputDeviceId:  asString(raw.outputDeviceId, d.outputDeviceId),
     monitorEnabled:  asBool(raw.monitorEnabled, d.monitorEnabled),
     monitorDeviceId: asString(raw.monitorDeviceId, d.monitorDeviceId),
+    micEffect:       asEnum(raw.micEffect, ['normal', 'distorted', 'radio'], d.micEffect),
     logLevel:        asEnum(raw.logLevel, ['debug', 'info', 'warn', 'error'], d.logLevel),
     launchOnBoot:    asBool(raw.launchOnBoot, d.launchOnBoot),
     eqEnabled:       asBool(raw.eqEnabled, d.eqEnabled),

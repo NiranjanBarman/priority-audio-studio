@@ -1,18 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trash2, Play, Music, ChevronUp, ChevronDown, FolderPlus } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
 import { usePlaylist } from '../context/PlaylistContext.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Toast from '../components/layout/Toast.jsx';
 
-const ACCEPT = '.mp3,.wav,.flac,.ogg,.m4a,.aac,.opus,.webm,audio/*';
-
 export default function Library() {
   const { engine } = useAudioEngine();
   const { tracks, activeId, setActiveId, addFiles, remove, reorder, clear } =
     usePlaylist();
 
-  const inputRef = useRef(null);
   const [toast, setToast] = useState(null);
   const [error, setError] = useState(null);
 
@@ -24,25 +21,37 @@ export default function Library() {
     }
   }, [engine]);
 
-  function handleAdd(e) {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-    const added = addFiles(files);
-    setToast({ level: 'success', message: `Added ${added.length} track(s)` });
-    // Reset input so same files can be picked again
-    if (inputRef.current) inputRef.current.value = '';
+  async function handleAdd() {
+    if (!window.pas?.openFiles) {
+      const message = 'The native audio file picker is only available in the desktop app.';
+      setError(message);
+      setToast({ level: 'error', message });
+      return;
+    }
+
+    try {
+      const files = await window.pas.openFiles();
+      if (!Array.isArray(files) || files.length === 0) return;
+      const added = addFiles(files);
+      setError(null);
+      setToast({ level: 'success', message: `Added ${added.length} track(s)` });
+    } catch (e) {
+      setError(e.message);
+      setToast({ level: 'error', message: `Could not add files: ${e.message}` });
+    }
   }
 
   async function playTrack(trackId) {
     const track = tracks.find((t) => t.id === trackId);
-    if (!track || !track.file) {
-      setError('Track file unavailable — re-add it. (M1 uses in-memory file objects.)');
-      setToast({ level: 'warn', message: 'File missing — please re-add.' });
+    if (!track || !track.filePath) {
+      const message = 'This saved playlist entry has no file path. Remove it and add the track again.';
+      setError(message);
+      setToast({ level: 'warn', message });
       return;
     }
     setError(null);
     try {
-      await engine.loadFile(track.file);
+      await engine.loadFile(track.filePath, track);
       setActiveId(trackId);
       await engine.play();
       setToast({ level: 'success', message: `Playing: ${track.name}` });
@@ -52,12 +61,20 @@ export default function Library() {
     }
   }
 
-  function handleRemove(trackId) {
+  async function handleRemove(trackId) {
     const track = tracks.find((t) => t.id === trackId);
-    if (activeId === trackId) engine.unloadFile();
-    remove(trackId);
-    if (track) {
-      setToast({ level: 'info', message: `Removed: ${track.name}` });
+    try {
+      if (track?.filePath && window.pas?.deauthorizeFile) {
+        await window.pas.deauthorizeFile(track.filePath);
+      }
+      if (activeId === trackId) engine.unloadFile();
+      remove(trackId);
+      if (track) {
+        setToast({ level: 'info', message: `Removed: ${track.name}` });
+      }
+    } catch (e) {
+      setError(e.message);
+      setToast({ level: 'error', message: `Could not remove track: ${e.message}` });
     }
   }
 
@@ -71,11 +88,21 @@ export default function Library() {
     reorder(idx, idx + 1);
   }
 
-  function handleClear() {
+  async function handleClear() {
     if (tracks.length === 0) return;
-    if (activeId) engine.unloadFile();
-    clear();
-    setToast({ level: 'info', message: 'Playlist cleared' });
+    try {
+      if (window.pas?.deauthorizeFile) {
+        for (const track of tracks) {
+          if (track.filePath) await window.pas.deauthorizeFile(track.filePath);
+        }
+      }
+      if (activeId) engine.unloadFile();
+      clear();
+      setToast({ level: 'info', message: 'Playlist cleared' });
+    } catch (e) {
+      setError(e.message);
+      setToast({ level: 'error', message: `Could not clear playlist: ${e.message}` });
+    }
   }
 
   return (
@@ -93,17 +120,9 @@ export default function Library() {
       {/* Add card */}
       <div className="card">
         <div className="row">
-          <button className="btn primary" onClick={() => inputRef.current?.click()}>
+          <button className="btn primary" onClick={handleAdd}>
             <FolderPlus size={13} /> Add files
           </button>
-          <input
-            ref={inputRef}
-            type="file"
-            accept={ACCEPT}
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleAdd}
-          />
           <span className="small muted">
             Supported: MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, WEBM
           </span>
@@ -129,7 +148,7 @@ export default function Library() {
           <div className="list">
             {tracks.map((t, idx) => {
               const isActive = activeId === t.id;
-              const fileMissing = !t.file;
+              const fileMissing = !t.filePath;
               return (
                 <div
                   key={t.id}
@@ -188,9 +207,10 @@ export default function Library() {
       {/* Honest M1 note */}
       <div className="card">
         <div className="small muted">
-          <strong>M1 note:</strong> Track files stay in memory while the app is
-          running, including when you switch tabs. After restarting the app,
-          re-add the files to play them again.
+          <strong>Playlist note:</strong> File paths are saved on this device
+          and remain available across app restarts. If a file is moved or
+          deleted, remove it from the playlist and add it again from its new
+          location.
         </div>
       </div>
 

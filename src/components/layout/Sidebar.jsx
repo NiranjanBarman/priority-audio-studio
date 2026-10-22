@@ -13,10 +13,10 @@ export default function Sidebar({ activeTab, onTabChange }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">PAS</div>
+        <div className="brand-mark">VPA</div>
         <div>
-          <div className="brand-title">Priority Audio</div>
-          <div className="brand-sub">Studio · M1</div>
+          <div className="brand-title">Voice Priority Audio</div>
+          <div className="brand-sub">Studio · v2.0</div>
         </div>
       </div>
       <nav className="nav">

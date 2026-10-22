@@ -182,11 +182,11 @@ export async function nativeReload() {
 
 /**
  * Build a `pas-audio://` URL for an authorized local path.
- * M2's filePlayer.js will use this instead of blob URLs.
+ * The file player uses this instead of blob URLs.
  * @param {string} filePath — absolute path, must be authorized
  * @returns {string}
  */
 export function buildPasAudioUrl(filePath) {
   // Encode the entire path so Windows backslashes and spaces survive.
-  return `pas-audio:///${encodeURIComponent(filePath)}`;
+  return `pas-audio://local/${encodeURIComponent(filePath)}`;
 }

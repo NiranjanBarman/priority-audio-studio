@@ -32,7 +32,7 @@ $ErrorActionPreference = "Stop"
 $config = if ($Debug) { "Debug" } else { "Release" }
 
 Write-Host "===============================================================" -ForegroundColor Cyan
-Write-Host "  Priority Audio Studio - Native Engine Build ($config)" -ForegroundColor Cyan
+Write-Host "  Voice Priority Audio - Native Engine Build ($config)" -ForegroundColor Cyan
 Write-Host "===============================================================" -ForegroundColor Cyan
 Write-Host ""
 

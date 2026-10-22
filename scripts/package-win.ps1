@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Packages Priority Audio Studio into a Windows NSIS installer via electron-builder.
+    Packages Voice Priority Audio into a Windows NSIS installer via electron-builder.
 
 .DESCRIPTION
     1. Verifies prerequisites (Node.js, electron-builder, native addon).
@@ -33,7 +33,7 @@ $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Write-Host "===============================================================" -ForegroundColor Cyan
-Write-Host "  Priority Audio Studio - Windows Packaging (M5)" -ForegroundColor Cyan
+Write-Host "  Voice Priority Audio - Windows Packaging" -ForegroundColor Cyan
 Write-Host "===============================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -72,7 +72,7 @@ if (-not $pkgJson.build) {
     # Minimal config — user can customize
     $defaultBuild = [ordered]@{
         appId = "com.priorityaudio.studio"
-        productName = "Priority Audio Studio"
+        productName = "Voice Priority Audio"
         directories = @{
             output = "release"
             buildResources = "assets"
@@ -80,7 +80,8 @@ if (-not $pkgJson.build) {
         files = @(
             "dist/**/*",
             "electron/**/*",
-            "package.json"
+            "package.json",
+            "LICENSE"
         )
         extraResources = @(
             @{
@@ -102,7 +103,7 @@ if (-not $pkgJson.build) {
             allowToChangeInstallationDirectory = $true
             createDesktopShortcut = $true
             createStartMenuShortcut = $true
-            shortcutName = "Priority Audio Studio"
+            shortcutName = "Voice Priority Audio"
         }
     }
 
@@ -257,7 +258,7 @@ if ($installers.Count -gt 0) {
     Write-Host "  [WARN] No installer found in $ReleaseDir" -ForegroundColor Yellow
 }
 
-$UnpackedExe = Join-Path $ReleaseDir "win-unpacked\Priority Audio Studio.exe"
+$UnpackedExe = Join-Path $ReleaseDir "win-unpacked\Voice Priority Audio.exe"
 if (Test-Path $UnpackedExe) {
     Write-Host ""
     Write-Host "  Portable app:" -ForegroundColor Cyan
@@ -270,7 +271,7 @@ Write-Host "    [ ] Installer runs without error"
 Write-Host "    [ ] App launches, Dashboard renders"
 Write-Host "    [ ] CABLE Input appears in output device list"
 Write-Host "    [ ] Play a file -> meters show activity"
-Write-Host "    [ ] BlueStacks mic receives audio (verify in Free Fire)"
+Write-Host "    [ ] Configured game receives audio from CABLE Output"
 Write-Host "    [ ] Uninstaller removes all files cleanly"
 Write-Host "===============================================================" -ForegroundColor Cyan
 exit 0

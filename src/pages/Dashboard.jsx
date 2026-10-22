@@ -68,6 +68,7 @@ export default function Dashboard() {
     setLocalError(null);
     try {
       await engine.init();
+      engine.setMicEffect(settings.micEffect || 'normal');
       if (settings.outputDeviceId) {
         await engine.setOutputDevice(settings.outputDeviceId);
       }
@@ -225,6 +226,16 @@ export default function Dashboard() {
     engine.setMicGain(value);
   }
 
+  function handleMicEffectChange(event) {
+    const effect = event.target.value;
+    try {
+      engine.setMicEffect(effect);
+      setSetting('micEffect', effect);
+    } catch (e) {
+      setToast({ level: 'error', message: `Could not apply microphone effect: ${e.message}` });
+    }
+  }
+
   const routedToCable =
     cableInput &&
     settings.outputDeviceId &&
@@ -235,7 +246,7 @@ export default function Dashboard() {
     <div>
       <PageHeader
         title="Dashboard"
-        subtitle="Loud, non-stop music → BlueStacks mic via CABLE"
+        subtitle="Loud, non-stop music and microphone audio → virtual cable"
         actions={
           <button
             className={'btn ' + (ready ? '' : 'primary')}
@@ -349,6 +360,17 @@ export default function Dashboard() {
                 emptyLabel="— Windows default microphone —"
               />
             </div>
+            <label className="field" style={{ marginTop: 12 }}>
+              <span>Mic Voice Effect</span>
+              <select
+                value={settings.micEffect || 'normal'}
+                onChange={handleMicEffectChange}
+              >
+                <option value="normal">Normal</option>
+                <option value="distorted">Trash Mic (Distorted)</option>
+                <option value="radio">Walkie-Talkie (Radio)</option>
+              </select>
+            </label>
           </div>
           <Slider
             label="Mic gain"
@@ -421,7 +443,7 @@ export default function Dashboard() {
             label="DTX tone injector (-55 dBFS pink noise)"
             checked={settings.dtxEnabled}
             onChange={handleDtx}
-            description="Prevents Free Fire's VAD from cutting transmission during quiet music."
+            description="Prevents the game's VAD from cutting transmission during quiet music."
           />
           <span className="tag">Auto-ducking intentionally disabled</span>
         </div>

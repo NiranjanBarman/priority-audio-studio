@@ -28,7 +28,7 @@ class WasapiLoopback;
 //   - Limiter brickwalls output at -1 dBFS.
 //   - DTX injects -55 dBFS pink noise AFTER the limiter so VAD never
 //     sees silence, and the DTX bed is never compressed/limited.
-//   - Meter reads the final output that BlueStacks will receive.
+//   - Meter reads the final output that the game will receive.
 //
 // THREADS:
 //   - JS/main thread:          init/start/stop/pushAudio/config/*

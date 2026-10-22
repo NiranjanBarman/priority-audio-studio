@@ -1,9 +1,10 @@
 {
-  "name": "priority-audio-studio",
-  "version": "0.1.0",
+  "name": "voice-priority-audio",
+  "version": "2.0.0",
   "private": true,
-  "description": "Loud, non-stop local music routed to BlueStacks mic via VB-CABLE.",
-  "author": "Priority Audio Studio",
+  "description": "A loud, non-stop audio and microphone priority mixer for PC games.",
+  "author": "Niranjan Barman",
+  "license": "MIT",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:vite\" \"npm:dev:electron\"",
@@ -30,7 +31,7 @@
   },
   "build": {
     "appId": "com.priorityaudio.studio",
-    "productName": "Priority Audio Studio",
+    "productName": "Voice Priority Audio",
     "directories": {
       "output": "release",
       "buildResources": "assets"
@@ -38,7 +39,8 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "package.json"
+      "package.json",
+      "LICENSE"
     ],
     "extraResources": [
       {
@@ -67,7 +69,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Priority Audio Studio"
+      "shortcutName": "Voice Priority Audio"
     }
   }
 }

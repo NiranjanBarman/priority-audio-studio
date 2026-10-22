@@ -181,7 +181,7 @@ export default function Mixer() {
           </li>
           <li>
             <strong>No auto-ducking:</strong> there is no code path anywhere in
-            this app that reduces music gain based on other sources or Free Fire
+            this app that reduces music gain based on other sources or game activity
             activity.
           </li>
         </ul>

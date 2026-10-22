@@ -196,8 +196,8 @@ export default function Settings() {
       <div className="card">
         <h3 className="card-title">About</h3>
         <div className="small muted" style={{ lineHeight: 1.8 }}>
-          <div><strong>Priority Audio Studio</strong> v0.1.0 (M1)</div>
-          <div>Loud, non-stop music → BlueStacks mic via VB-CABLE.</div>
+          <div><strong>Voice Priority Audio</strong> v2.0.0</div>
+          <div>Priority music and microphone audio for PC games via a virtual audio cable.</div>
           <div style={{ marginTop: 8 }}>
             <strong>M1 scope:</strong> local file playback, anti-duck chain
             (compressor + limiter + DTX), device routing, priority mixer UI,

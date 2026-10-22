@@ -3,7 +3,7 @@
  *
  * Two responsibilities:
  *   1. DTX (Discontinuous Transmission) injector: a -55 dBFS pink-noise
- *      bed that keeps Free Fire's VAD convinced the mic is "active".
+ *      bed that keeps the game's VAD convinced the mic is "active".
  *      Without this, the game's VAD cuts transmission during quiet
  *      music passages — the music literally stops reaching other players.
  *   2. Preset application: switches compressor/makeup/limiter values

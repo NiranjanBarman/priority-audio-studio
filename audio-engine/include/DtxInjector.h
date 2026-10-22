@@ -4,7 +4,7 @@
 #include <vector>
 
 // Generates a pink-noise bed at a fixed dBFS level and mixes it into the
-// output so Free Fire's VAD never sees "silence" during quiet passages.
+// output so the game's VAD never sees "silence" during quiet passages.
 // The render thread calls inject() once per block.
 class DtxInjector {
 public:

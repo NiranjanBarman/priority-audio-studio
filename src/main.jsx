@@ -39,7 +39,7 @@ root.render(
 if (import.meta.env && import.meta.env.DEV) {
   // eslint-disable-next-line no-console
   console.log(
-    '%c[PAS] Priority Audio Studio — React mounted',
+    '%c[VPA] Voice Priority Audio — React mounted',
     'color:#8B5CF6;font-weight:bold'
   );
 }

@@ -1,3 +1,5 @@
+import { buildPasAudioUrl } from '../services/ipc.js';
+
 /**
  * File playback via <audio> element + MediaElementSourceNode.
  *
@@ -62,22 +64,29 @@ export class FilePlayer {
   }
 
   /**
-   * Load a new File object.
-   * @param {File} file — from an <input type="file">
+   * Load a file selected through Electron's native file dialog.
+   * @param {string} filePath — absolute path authorized by the main process
    */
-  async load(file) {
-    this.stop();
-    if (this.currentUrl) {
-      URL.revokeObjectURL(this.currentUrl);
-      this.currentUrl = null;
+  async load(filePath, metadata = {}) {
+    if (typeof filePath !== 'string' || !filePath) {
+      throw new TypeError('An authorized audio file path is required');
     }
 
-    this.currentUrl = URL.createObjectURL(file);
+    this.stop();
+    if (this.currentUrl?.startsWith('blob:')) {
+      URL.revokeObjectURL(this.currentUrl);
+    }
+
+    this.currentUrl = buildPasAudioUrl(filePath);
     this.audioEl.src = this.currentUrl;
     this._wire();
 
     this.onState({
-      currentTrack: { name: file.name, size: file.size, type: file.type },
+      currentTrack: {
+        name: metadata.name || filePath.split(/[\\/]/).pop(),
+        size: Number(metadata.size) || 0,
+        type: metadata.ext || ''
+      },
       currentTime: 0,
       duration: 0,
       error: null
@@ -88,7 +97,7 @@ export class FilePlayer {
     this.stop();
     this.audioEl.removeAttribute('src');
     this.audioEl.load();
-    if (this.currentUrl) URL.revokeObjectURL(this.currentUrl);
+    if (this.currentUrl?.startsWith('blob:')) URL.revokeObjectURL(this.currentUrl);
     this.currentUrl = null;
     this.onState({
       currentTrack: null,
@@ -131,7 +140,7 @@ export class FilePlayer {
   /** Clean shutdown — revoke blob URLs so they don't leak. */
   dispose() {
     this.stop();
-    if (this.currentUrl) URL.revokeObjectURL(this.currentUrl);
+    if (this.currentUrl?.startsWith('blob:')) URL.revokeObjectURL(this.currentUrl);
     this.currentUrl = null;
     if (this.srcNode) {
       try { this.srcNode.disconnect(); } catch { /* ok */ }

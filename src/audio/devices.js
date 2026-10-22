@@ -30,7 +30,7 @@ export async function listDevices() {
 /**
  * Find the VB-CABLE playback endpoint by label.
  * The Windows playback device is named "CABLE Input (VB-Audio Virtual Cable)".
- * BlueStacks reads the *recording* side "CABLE Output".
+ * Games read the *recording* side "CABLE Output".
  *
  * @param {MediaDeviceInfo[]} outputs
  * @returns {MediaDeviceInfo | null}

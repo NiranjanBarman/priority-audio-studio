@@ -1,5 +1,5 @@
 /**
- * Chromium permission whitelist for Priority Audio Studio.
+ * Chromium permission whitelist for Voice Priority Audio.
  *
  * WHY THIS FILE EXISTS:
  *   Electron's default policy denies almost every permission. Without

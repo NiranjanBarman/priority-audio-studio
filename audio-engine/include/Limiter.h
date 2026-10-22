@@ -27,7 +27,7 @@
  *   "Music ke loud hone se agar phate (distortion) to chalega — loud
  *   priority hai, clean secondary hai." This limiter allows aggressive
  *   makeup gain without producing digital clipping that would break
- *   the BlueStacks mic path.
+ *   the virtual microphone path to the game.
  *
  * THREADING:
  *   - setCeilingDb/setReleaseMs/setLookaheadMs: from JS/main thread.

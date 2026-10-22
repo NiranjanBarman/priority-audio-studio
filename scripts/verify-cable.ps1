@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Verifies VB-CABLE installation and configuration for Priority Audio Studio.
+    Verifies VB-CABLE installation and configuration for Voice Priority Audio.
 
 .DESCRIPTION
     Runs 5 checks:
@@ -22,7 +22,7 @@ param()
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Write-Host "===============================================================" -ForegroundColor Cyan
-Write-Host "  Priority Audio Studio - VB-CABLE Verification" -ForegroundColor Cyan
+Write-Host "  Voice Priority Audio - VB-CABLE Verification" -ForegroundColor Cyan
 Write-Host "===============================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -189,9 +189,9 @@ if ($fail -eq 0 -and $warn -eq 0) {
     Write-Host "  ALL CHECKS PASSED" -ForegroundColor Green
     Write-Host ""
     Write-Host "  Next steps:" -ForegroundColor Cyan
-    Write-Host "    1. BlueStacks 5 -> Settings -> Devices -> Microphone = CABLE Output"
-    Write-Host "    2. Launch Priority Audio Studio -> Dashboard -> Output = CABLE Input"
-    Write-Host "    3. Play a file -> verify music reaches BlueStacks mic"
+    Write-Host "    1. In your game or emulator, set Microphone = CABLE Output"
+    Write-Host "    2. Launch Voice Priority Audio -> Dashboard -> Output = CABLE Input"
+    Write-Host "    3. Play a file -> verify music reaches the game's microphone"
     Write-Host "===============================================================" -ForegroundColor Cyan
     exit 0
 } elseif ($fail -eq 0) {

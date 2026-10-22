@@ -9,7 +9,6 @@ import React, {
 
 const PlaylistContext = createContext(null);
 const STORAGE_KEY = 'pas.playlist.v1';
-const MAX_PERSISTED = 200;
 
 export function PlaylistProvider({ children }) {
   const [tracks, setTracks] = useState(() => loadPersisted());
@@ -17,35 +16,49 @@ export function PlaylistProvider({ children }) {
 
   useEffect(() => {
     try {
-      const metadata = tracks.slice(0, MAX_PERSISTED).map((track) => ({
+      const metadata = tracks.map((track) => ({
         id: track.id,
         name: track.name,
+        filePath: track.filePath,
+        size: track.size,
+        ext: track.ext,
         source: track.source || 'file'
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(metadata));
-    } catch {
-      // Storage can be unavailable; in-memory playlist state remains usable.
+    } catch (error) {
+      console.error('[playlist] Could not persist playlist metadata:', error);
     }
   }, [tracks]);
 
   const addFiles = useCallback((files) => {
-    const incoming = Array.from(files).map((file) => ({
-      id: `${file.name}-${file.size}-${file.lastModified}`,
-      name: file.name,
-      file,
-      source: 'file'
-    }));
+    const seen = new Set(tracks.map((track) => track.id));
+    const incoming = [];
+
+    for (const file of Array.from(files)) {
+      if (!file || typeof file.path !== 'string' || !file.path) continue;
+      const id = file.path.toLowerCase();
+      if (seen.has(id)) continue;
+      seen.add(id);
+      incoming.push({
+        id,
+        name: file.name || file.path.split(/[\\/]/).pop(),
+        filePath: file.path,
+        size: Number(file.size) || 0,
+        ext: file.ext || '',
+        source: 'file'
+      });
+    }
 
     setTracks((previous) => {
-      const seen = new Set(previous.map((track) => track.id));
+      const currentIds = new Set(previous.map((track) => track.id));
       return [
         ...previous,
-        ...incoming.filter((track) => !seen.has(track.id))
+        ...incoming.filter((track) => !currentIds.has(track.id))
       ];
     });
 
     return incoming;
-  }, []);
+  }, [tracks]);
 
   const remove = useCallback((id) => {
     setTracks((previous) => previous.filter((track) => track.id !== id));
@@ -145,13 +158,19 @@ function loadPersisted() {
 
     return parsed
       .filter((track) => track && typeof track.id === 'string')
-      .map((track) => ({
-        id: track.id,
-        name: track.name || track.id,
-        file: null,
-        source: track.source || 'file'
-      }));
-  } catch {
+      .map((track) => {
+        const filePath = typeof track.filePath === 'string' ? track.filePath : '';
+        return {
+          id: filePath ? filePath.toLowerCase() : track.id,
+          name: track.name || track.id,
+          filePath,
+          size: Number(track.size) || 0,
+          ext: typeof track.ext === 'string' ? track.ext : '',
+          source: track.source || 'file'
+        };
+      });
+  } catch (error) {
+    console.error('[playlist] Could not load persisted playlist:', error);
     return [];
   }
 }

@@ -26,6 +26,7 @@ export class AudioEngine {
     this.antiDuck = null;
     this.mic = null;
     this.micGain = 1;
+    this.micEffect = 'normal';
 
     this.monitorEl = null;
     this._initPromise = null;
@@ -94,6 +95,7 @@ export class AudioEngine {
     this.antiDuck = new AntiDuck(this.ctx, this.graph);
     this.mic = new MicCapture(this.ctx, this.graph.sourceInput);
     this.mic.setGain(this.micGain);
+    this.mic.setEffect(this.micEffect);
 
     this.player = new FilePlayer(this.ctx, this.graph.sourceInput, (s) => {
       this._set(s);
@@ -189,9 +191,9 @@ export class AudioEngine {
 
   // ── Player passthroughs ────────────────────────────────────────────
 
-  async loadFile(file) {
+  async loadFile(filePath, metadata) {
     await this.init();
-    return this.player.load(file);
+    return this.player.load(filePath, metadata);
   }
 
   unloadFile() {
@@ -271,6 +273,14 @@ export class AudioEngine {
     const gain = Math.max(0, Math.min(2, Number(value) || 0));
     this.micGain = gain;
     if (this.mic) this.mic.setGain(gain);
+  }
+
+  setMicEffect(effectName) {
+    if (!['normal', 'distorted', 'radio'].includes(effectName)) {
+      throw new TypeError(`Unsupported microphone effect: ${effectName}`);
+    }
+    if (this.mic) this.mic.setEffect(effectName);
+    this.micEffect = effectName;
   }
 
   // ── Shutdown ───────────────────────────────────────────────────────

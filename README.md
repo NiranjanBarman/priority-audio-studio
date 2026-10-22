@@ -1,49 +1,60 @@
-# Priority Audio Studio
+# Voice Priority Audio
 
-Windows desktop app that plays local PC music through a loud, non-stop
-audio chain and routes it to BlueStacks as a virtual microphone via VB-CABLE.
+Voice Priority Audio is a Windows desktop app that mixes local music with a
+physical microphone and routes the combined audio to PC games through a
+virtual audio cable. Configure your game or Android emulator to use the cable's
+recording endpoint as its microphone.
 
-**Core goal:** Music always loud. Never ducked. Never silenced by Free Fire's VAD.
+**Core goal:** Music is Rank 1 and is never ducked by the Rank 2 microphone.
 
----
+## Features
 
-## What This App Does
+- Plays local music in common formats, including MP3, WAV, FLAC, OGG, M4A,
+  AAC, OPUS, and WEBM.
+- Keeps the playlist and absolute file paths across application restarts.
+- Mixes an optional physical microphone with music.
+- Offers Normal, Trash Mic (Distorted), and Walkie-Talkie (Radio) microphone
+  effects.
+- Processes the mix through an anti-duck audio chain.
+- Can inject a quiet DTX tone to help prevent the game's VAD from cutting
+  transmission during quiet passages.
+- Routes processed output to VB-CABLE's `CABLE Input`; games use `CABLE Output`
+  as their microphone input.
+- Never automatically reduces music gain based on microphone activity.
 
-- 🎵 Plays local music (MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, WEBM)
-- 🎤 Mixes an optional physical microphone with music (Music Rank 1, Mic Rank 2)
-- 📂 Keeps selected music files and playback alive while switching app tabs
-- 🔊 Processes through an aggressive anti-duck chain (compressor + limiter + makeup gain)
-- 🎚️ Injects a -55 dBFS DTX tone so Free Fire's VAD never sees silence
-- 🎤 Routes processed output to VB-CABLE's `CABLE Input` → BlueStacks reads it as `CABLE Output`
-- ❌ **No auto-ducking. No auto-volume-reduction. Ever.**
+## Limitations
 
-Playlist files remain in memory for the current app session. After restarting the
-app, re-add the files to play them again.
-
-## What This App Does NOT Do
-
-- ❌ No system/Chrome loopback capture
-- ❌ No custom virtual audio driver
-- ❌ No server-side Free Fire control (impossible — see Limitations)
-
----
+- Does not capture system or application loopback audio.
+- Does not install a custom virtual audio driver. VB-CABLE must be installed
+  separately.
+- Cannot control audio processing or microphone attenuation performed by a
+  game or its servers.
 
 ## Prerequisites
 
 | Tool | Version | Why |
 |------|---------|-----|
-| Node.js | 22 LTS | Build + dev |
-| VB-CABLE | latest | Virtual audio cable — MANDATORY |
-| BlueStacks 5 | 5.20+ | Target runtime |
-| Visual Studio Build Tools | 2022 | Required to rebuild the native audio addon |
-
----
+| Node.js | 22 LTS | Build and development |
+| VB-CABLE | Latest | Virtual audio cable |
+| PC game or Android emulator | Current | Target audio application |
+| Visual Studio Build Tools | 2022 | Rebuilding the native audio addon |
 
 ## Quick Start
 
 ```powershell
-# 1. Install dependencies
 npm install
-
-# 2. Run dev mode
 npm run dev
+```
+
+## Build
+
+```powershell
+npm run build
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\package-win.ps1 -SkipNativeRebuild
+```
+
+The Windows installer is written to `release`.
+
+## License
+
+MIT. See [LICENSE](./LICENSE).

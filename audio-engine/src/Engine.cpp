@@ -236,10 +236,10 @@ void Engine::renderBlock(uint32_t frames, float* out) noexcept {
     limiter_.process(out, frames);
 
     // 8. DTX injector — pink noise bed at -55 dBFS, post-limiter so it
-    //    survives untouched and lands at exactly -55 dBFS in BlueStacks.
+    //    survives untouched and lands at exactly -55 dBFS for the game.
     dtx_.inject(out, frames);
 
-    // 9. Meter — reads final output that BlueStacks will receive
+    // 9. Meter — reads final output that the game will receive
     meter_.measure(out, frames, ch);
 }
 

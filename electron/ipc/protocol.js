@@ -2,26 +2,21 @@
  * pas-audio:// custom protocol — streaming local audio files.
  *
  * WHY THIS EXISTS:
- *   M1 uses blob URLs (URL.createObjectURL) for file playback. That works
- *   but loads the whole file into memory — a 200 MB FLAC becomes a 200 MB
- *   blob. Fine for M1. Broken for playlists of large files.
- *
- *   M2 replaces blob URLs with `pas-audio://` which streams the file from
- *   disk on demand. The <audio> element handles seeking natively via
+ *   The `pas-audio://` protocol streams selected files from disk on demand.
+ *   The <audio> element handles seeking natively via
  *   Range requests, so we only read what's needed.
  *
  * URL FORMAT:
- *   pas-audio:///<url-encoded-absolute-path>
- *   Example: pas-audio:///C%3A%5CMusic%5Ctrack.mp3
+ *   pas-audio://local/<url-encoded-absolute-path>
+ *   Example: pas-audio://local/C%3A%5CMusic%5Ctrack.mp3
  *
- *   The triple-slash encodes an absolute path. We percent-decode the
- *   pathname. Cross-platform: on Windows we get `/C:\Music\track.mp3`
- *   which we strip leading `/` and decode to `C:\Music\track.mp3`.
+ *   On Windows the decoded path is `/C:\Music\track.mp3`, so we strip the
+ *   leading `/` to get `C:\Music\track.mp3`.
  *
  * SECURITY:
  *   Only paths in the authorized set (from files.js) can be served. Any
  *   unauthorized path → 403. This makes path-traversal attacks useless
- *   (an attacker can't guess-and-serve `pas-audio:///C:/Windows/...`).
+ *   (an attacker can't guess-and-serve `pas-audio://local/C:/Windows/...`).
  *
  * RANGE SUPPORT:
  *   <audio> sends `Range: bytes=START-END` when seeking. We return
@@ -36,6 +31,7 @@ const fs = require('fs');
 const { isAuthorized } = require('./files.js');
 
 const SCHEME = 'pas-audio';
+const AUDIO_HOST = 'local';
 
 const MIME_TYPES = {
   mp3: 'audio/mpeg',
@@ -55,20 +51,34 @@ function getMimeType(filePath) {
 }
 
 /**
- * Parse a Range header like "bytes=1000-2000" or "bytes=1000-".
+ * Parse a Range header like "bytes=1000-2000", "bytes=1000-", or "bytes=-128".
  * @returns {{ start: number, end: number } | null}
  */
 function parseRange(rangeHeader, fileSize) {
   if (!rangeHeader) return null;
-  const match = /^bytes=(\d+)-(\d*)$/.exec(rangeHeader.trim());
+  const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader.trim());
   if (!match) return null;
 
-  const start = parseInt(match[1], 10);
+  const startStr = match[1];
   const endStr = match[2];
-  const end = endStr === '' ? fileSize - 1 : parseInt(endStr, 10);
+  if (!startStr && !endStr) return null;
 
-  if (isNaN(start) || start < 0 || start >= fileSize) return null;
-  if (isNaN(end) || end < start) return null;
+  let start;
+  let end;
+  if (!startStr) {
+    const suffixLength = parseInt(endStr, 10);
+    if (!Number.isSafeInteger(suffixLength) || suffixLength <= 0 || fileSize <= 0) {
+      return null;
+    }
+    start = Math.max(fileSize - suffixLength, 0);
+    end = fileSize - 1;
+  } else {
+    start = parseInt(startStr, 10);
+    end = endStr === '' ? fileSize - 1 : parseInt(endStr, 10);
+  }
+
+  if (!Number.isSafeInteger(start) || start < 0 || start >= fileSize) return null;
+  if (!Number.isSafeInteger(end) || end < start) return null;
   return { start, end: Math.min(end, fileSize - 1) };
 }
 
@@ -98,6 +108,9 @@ function registerProtocol() {
   protocol.handle(SCHEME, async (request) => {
     try {
       const url = new URL(request.url);
+      if (url.hostname !== AUDIO_HOST) {
+        return new Response('Not found', { status: 404 });
+      }
       // url.pathname is like "/C%3A%5CMusic%5Ctrack.mp3"
       const decoded = decodeURIComponent(url.pathname);
       // Windows: strip leading "/" → "C:\Music\track.mp3"
