@@ -15,12 +15,12 @@ recording endpoint as its microphone.
 - Mixes an optional physical microphone with music.
 - Offers Normal, Trash Mic (Distorted), and Walkie-Talkie (Radio) microphone
   effects.
-- Processes the mix through an anti-duck audio chain.
+- Processes music through an anti-duck chain; microphone audio uses a separate
+  limiter so mic peaks do not trigger music gain reduction.
 - Can inject a quiet DTX tone to help prevent the game's VAD from cutting
   transmission during quiet passages.
 - Routes processed output to VB-CABLE's `CABLE Input`; games use `CABLE Output`
   as their microphone input.
-- Never automatically reduces music gain based on microphone activity.
 
 ## Limitations
 

@@ -1,18 +1,34 @@
 /**
  * Builds the fixed anti-duck processing chain.
  *
- * CHAIN ORDER (M1 + M3-wired):
- *   sourceInput → HPF(80Hz) → 10-band EQ → bassShelf → trebleShelf
- *               → distortion(waveshaper) → compressor → makeup
- *               → limiter → safetyTrim → analyser → destination
+ * CHAIN ORDER:
+ *   Music: sourceInput → HPF/EQ → distortion → compressor → makeup
+ *          → limiter ─┐
+ *   Mic: micInput → micLimiter ─┴→ mixBus → safetyTrim → analyser → destination
  *
  * The EQ section is controlled by Equalizer.jsx. Its nodes are returned
  * in the graph so the page can tweak gains live.
  */
 export function buildGraph(ctx) {
   // ── SOURCE INPUT ──────────────────────────────────────────────────
+  // Music runs through the anti-duck compressor without mic activity
+  // triggering gain reduction on the music bus.
   const sourceInput = ctx.createGain();
   sourceInput.gain.value = 1.0;
+
+  // Mic has its own limiter so its peaks cannot trigger music gain reduction.
+  const micInput = ctx.createGain();
+  micInput.gain.value = 1.0;
+
+  const micLimiter = ctx.createDynamicsCompressor();
+  micLimiter.threshold.value = -18;
+  micLimiter.knee.value = 0;
+  micLimiter.ratio.value = 20;
+  micLimiter.attack.value = 0.001;
+  micLimiter.release.value = 0.1;
+
+  const mixBus = ctx.createGain();
+  mixBus.gain.value = 1.0;
 
   // ── HPF 80 Hz ─────────────────────────────────────────────────────
   const hpf = ctx.createBiquadFilter();
@@ -98,9 +114,7 @@ export function buildGraph(ctx) {
   const mediaStreamDest = ctx.createMediaStreamDestination();
 
   // ── WIRING ────────────────────────────────────────────────────────
-  // sourceInput → hpf → eqBands[0..9] → bassShelf → trebleShelf
-  // → distortionIn → distortionOut → comp → makeup → limiter
-  // → safetyTrim → analyser → destination
+  // The music and mic branches are processed independently before mixing.
   sourceInput.connect(hpf);
 
   let prev = hpf;
@@ -114,7 +128,10 @@ export function buildGraph(ctx) {
   distortionOut.connect(comp);
   comp.connect(makeup);
   makeup.connect(limiter);
-  limiter.connect(safetyTrim);
+  limiter.connect(mixBus);
+  micInput.connect(micLimiter);
+  micLimiter.connect(mixBus);
+  mixBus.connect(safetyTrim);
 
   safetyTrim.connect(analyser);
   analyser.connect(ctx.destination);
@@ -124,6 +141,9 @@ export function buildGraph(ctx) {
 
   return {
     sourceInput,
+    micInput,
+    micLimiter,
+    mixBus,
     hpf,
     eqBands,
     bassShelf,

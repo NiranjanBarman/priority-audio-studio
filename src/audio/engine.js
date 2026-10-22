@@ -93,7 +93,7 @@ export class AudioEngine {
     this.graph = buildGraph(this.ctx);
     this.meters = new Meters(this.graph.analyser);
     this.antiDuck = new AntiDuck(this.ctx, this.graph);
-    this.mic = new MicCapture(this.ctx, this.graph.sourceInput);
+    this.mic = new MicCapture(this.ctx, this.graph.micInput);
     this.mic.setGain(this.micGain);
     this.mic.setEffect(this.micEffect);
 

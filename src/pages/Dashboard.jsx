@@ -331,7 +331,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── M2 microphone mixed into the existing output graph ─────── */}
+      {/* ─── M2 microphone mixed after the music compressor ─────────── */}
       <div className="card">
         <h3 className="card-title">Microphone (M2)</h3>
         <div className="row" style={{ gap: 16, marginBottom: 14 }}>
@@ -341,6 +341,11 @@ export default function Dashboard() {
           <span className="small muted">
             Mic: NORMAL Priority (Rank 2)
           </span>
+        </div>
+        <div className="small muted" style={{ marginBottom: 12 }}>
+          Music and mic use separate processing paths, so mic peaks will not
+          turn the music down. Use headphones to keep game voices from leaking
+          into your physical mic; game-side processing can still affect the mix.
         </div>
         <div className="grid-2">
           <div>
