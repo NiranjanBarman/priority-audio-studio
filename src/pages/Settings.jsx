@@ -70,7 +70,7 @@ export default function Settings() {
   }
 
   return (
-    <div>
+    <div className="settings-page">
       <PageHeader
         title="Settings"
         subtitle="Diagnostics, logs, engine control, preferences"
@@ -91,7 +91,7 @@ export default function Settings() {
           <Info size={11} style={{ marginRight: 6 }} />
           Runtime
         </h3>
-        <div className="small mono" style={{ lineHeight: 1.8 }}>
+        <div className="small mono settings-runtime" style={{ lineHeight: 1.8 }}>
           {info ? (
             <>
               <div>Electron: {info.electron || '—'}</div>
@@ -196,7 +196,7 @@ export default function Settings() {
       <div className="card">
         <h3 className="card-title">About</h3>
         <div className="small muted" style={{ lineHeight: 1.8 }}>
-          <div><strong>Voice Priority Audio</strong> v2.0.0</div>
+          <div><strong>Voice Priority Audio Studio</strong> v2.3.1</div>
           <div>Priority music and microphone audio for PC games via a virtual audio cable.</div>
           <div style={{ marginTop: 8 }}>
             <strong>M1 scope:</strong> local file playback, anti-duck chain

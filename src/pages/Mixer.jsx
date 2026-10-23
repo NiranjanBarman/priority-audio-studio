@@ -23,10 +23,13 @@ export default function Mixer() {
   useEffect(() => {
     setSources((prev) => ({
       ...prev,
-      music: { ...prev.music, gain: state.volume },
+      music: {
+        ...prev.music,
+        gain: prev.music.muted ? prev.music.gain : state.volume
+      },
       mic: {
         ...prev.mic,
-        gain: engine.micGain,
+        gain: prev.mic.muted ? prev.mic.gain : engine.micGain,
         active: state.micEnabled
       }
     }));
@@ -44,38 +47,38 @@ export default function Mixer() {
     if (key === 'music') {
       // FIX M6: always call engine.setVolume (safe even pre-init),
       // AND persist to settings so Dashboard + reload pick it up.
-      engine.setVolume(val);
+      engine.setVolume(sources.music.muted ? 0 : val);
       setSetting('volume', val);
     } else if (key === 'mic') {
-      engine.setMicGain(val);
+      engine.setMicGain(sources.mic.muted ? 0 : val);
     }
   }
 
   function handleMute(key) {
-    setSources((prev) => {
-      const next = !prev[key].muted;
-      if (key === 'music') {
-        // Mute is transient — do NOT save to settings.
-        engine.setVolume(next ? 0 : prev.music.gain);
-      } else if (key === 'mic') {
-        engine.setMicGain(next ? 0 : prev.mic.gain);
-      }
-      return { ...prev, [key]: { ...prev[key], muted: next } };
-    });
+    const muted = !sources[key].muted;
+    setSources((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], muted }
+    }));
+
+    if (key === 'music') {
+      // Mute is transient — do NOT save to settings.
+      engine.setVolume(muted ? 0 : sources.music.gain);
+    } else if (key === 'mic') {
+      engine.setMicGain(muted ? 0 : sources.mic.gain);
+    }
   }
 
   function handleSolo(key) {
-    setSources((prev) => {
-      const newSolo = !prev[key].solo;
-      const updated = { ...prev, [key]: { ...prev[key], solo: newSolo } };
-      if (key === 'music') {
-        if (newSolo) engine.setVolume(prev.music.gain);
-      }
-      return updated;
-    });
+    const newSolo = !sources[key].solo;
+    setSources((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], solo: newSolo }
+    }));
+    if (key === 'music' && newSolo) engine.setVolume(sources.music.gain);
     setToast({
       level: 'info',
-      message: `${sources[key].label}: solo ${!sources[key].solo ? 'ON' : 'OFF'}`
+      message: `${sources[key].label}: solo ${newSolo ? 'ON' : 'OFF'}`
     });
   }
 
@@ -87,7 +90,7 @@ export default function Mixer() {
   const anySolo = stripData.some((s) => s.solo);
 
   return (
-    <div>
+    <div className="mixer-page">
       <PageHeader
         title="Audio Mixer"
         subtitle="Rank 1 always wins. No auto-ducking."

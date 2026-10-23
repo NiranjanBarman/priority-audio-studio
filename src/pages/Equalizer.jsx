@@ -124,7 +124,7 @@ export default function Equalizer() {
   }
 
   return (
-    <div>
+    <div className="equalizer-page">
       <PageHeader
         title="Equalizer"
         subtitle="10-band graphic EQ + tone shaping + intentional distortion"
@@ -165,9 +165,10 @@ export default function Equalizer() {
             alignItems: 'end',
             opacity: enabled ? 1 : 0.4
           }}
+          className="eq-band-grid"
         >
           {BANDS.map((b, idx) => (
-            <div key={b.freq} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div key={b.freq} className="eq-band" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div className="mono small muted" style={{ textAlign: 'center', fontSize: 10 }}>
                 {gains[idx] > 0 ? '+' : ''}{gains[idx].toFixed(1)}
               </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Volume2, Radio, Zap, AlertTriangle, Power,
-  Music, Headphones, Activity
+  Music, Headphones, Activity, Mic2, AudioWaveform, Cable
 } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
 import { useDevices } from '../hooks/useDevices.js';
@@ -21,6 +21,8 @@ import Slider from '../components/controls/Slider.jsx';
 import Toggle from '../components/controls/Toggle.jsx';
 import PresetPicker from '../components/controls/PresetPicker.jsx';
 import DeviceSelect from '../components/routing/DeviceSelect.jsx';
+import PathDiagram from '../components/routing/PathDiagram.jsx';
+import { getDiagnostics } from '../services/diagnostics.js';
 
 export default function Dashboard() {
   const { engine, state, ready } = useAudioEngine();
@@ -35,7 +37,19 @@ export default function Dashboard() {
     () => engine.state.micDeviceId || ''
   );
   const [micGain, setMicGain] = useState(() => engine.micGain);
+  const [healthScore, setHealthScore] = useState(() => getDiagnostics().getHealthScore());
   const autoPickedRef = useRef(false);
+
+  useEffect(() => {
+    const diagnostics = getDiagnostics();
+    diagnostics.attach(engine);
+    diagnostics.start();
+    const unsubscribe = diagnostics.subscribe(() => {
+      setHealthScore(diagnostics.getHealthScore());
+    });
+    setHealthScore(diagnostics.getHealthScore());
+    return unsubscribe;
+  }, [engine]);
 
   // Auto-pick CABLE Input as output on first load
   useEffect(() => {
@@ -243,9 +257,9 @@ export default function Dashboard() {
   const noCableInstalled = outputs.length > 0 && !cableInput;
 
   return (
-    <div>
+    <div className="dashboard-page">
       <PageHeader
-        title="Dashboard"
+        title="Audio Control Studio"
         subtitle="Loud, non-stop music and microphone audio → virtual cable"
         actions={
           <button
@@ -258,6 +272,46 @@ export default function Dashboard() {
         }
       />
 
+      <div className="dashboard-status-grid">
+        <div className="status-card">
+          <div className="status-card-label"><Cable size={13} /> Output device</div>
+          <div className="status-card-value">{routedToCable ? 'VB-CABLE connected' : 'Output not routed'}</div>
+          <div className={'small ' + (routedToCable ? 'ok' : 'warn')}>
+            {routedToCable ? 'Ready for game input' : 'Select CABLE Input below'}
+          </div>
+        </div>
+        <div className="status-card">
+          <div className="status-card-label"><Mic2 size={13} /> Microphone</div>
+          <div className="status-card-value">{state.micEnabled ? 'Live input' : 'Disabled'}</div>
+          <div className="small muted">{state.micEnabled ? 'Mixed at Rank 2' : 'Enable to add mic audio'}</div>
+        </div>
+        <div className="status-card">
+          <div className="status-card-label"><AudioWaveform size={13} /> Audio engine</div>
+          <div className="status-card-value">{engine.ctx?.state === 'running' ? 'Running' : 'Standby'}</div>
+          <div className={'small ' + (engine.ctx?.state === 'running' ? 'ok' : 'muted')}>
+            {engine.ctx?.state === 'running' ? 'Processing audio' : 'Start when ready'}
+          </div>
+        </div>
+        <div className="status-card">
+          <div className="status-card-label"><Activity size={13} /> Audio latency</div>
+          <div className="status-card-value">
+            {engine.ctx?.baseLatency ? `${(engine.ctx.baseLatency * 1000).toFixed(1)} ms` : '—'}
+          </div>
+          <div className="small muted">
+            {engine.ctx?.sampleRate ? `${engine.ctx.sampleRate} Hz sample rate` : 'Waiting for engine'}
+          </div>
+        </div>
+        <div className="status-card">
+          <div className="status-card-label"><Zap size={13} /> Audio health</div>
+          <div className="status-card-value">{healthScore}<span className="status-score-unit"> / 100</span></div>
+          <div className={'small ' + (healthScore >= 90 ? 'ok' : healthScore >= 70 ? 'warn' : 'err')}>
+            {healthScore >= 90 ? 'Nominal' : healthScore >= 70 ? 'Attention' : 'Degraded'}
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-primary-grid">
+        <div>
       {/* ─── Routing card ───────────────────────────────────────────── */}
       <div className="card">
         <h3 className="card-title">Routing</h3>
@@ -330,8 +384,10 @@ export default function Dashboard() {
           />
         </div>
       </div>
+        </div>
 
       {/* ─── M2 microphone mixed after the music compressor ─────────── */}
+        <div>
       <div className="card">
         <h3 className="card-title">Microphone (M2)</h3>
         <div className="row" style={{ gap: 16, marginBottom: 14 }}>
@@ -387,6 +443,8 @@ export default function Dashboard() {
           />
         </div>
       </div>
+        </div>
+      </div>
 
       {/* ─── Volume + meter ─────────────────────────────────────────── */}
       <div className="grid-2">
@@ -418,6 +476,41 @@ export default function Dashboard() {
             <ClipLed clipping={clip} />
           </div>
         </div>
+      </div>
+
+      <div className="dashboard-overview-grid">
+        <div className="card">
+          <h3 className="card-title"><Music size={13} /> Mixer overview</h3>
+          <div className="overview-source">
+            <div className="row"><Music size={14} /><strong>Music</strong><span className="tag">Rank 1</span></div>
+            <div className="small muted">{Math.round(settings.volume * 100)}% output gain</div>
+            <div className="overview-track"><span style={{ width: `${Math.round(settings.volume * 100)}%` }} /></div>
+          </div>
+          <div className="overview-source">
+            <div className="row"><Mic2 size={14} /><strong>Microphone</strong><span className="tag muted-tag">Rank 2</span></div>
+            <div className="small muted">{state.micEnabled ? 'Live' : 'Disabled'} · gain ×{engine.micGain.toFixed(2)}</div>
+            <div className="overview-track"><span style={{ width: `${Math.round((engine.micGain / 2) * 100)}%` }} /></div>
+          </div>
+        </div>
+        <div className="card">
+          <h3 className="card-title"><AudioWaveform size={13} /> Equalizer overview</h3>
+          <div className={'tag ' + (settings.eqEnabled ? 'ok-tag' : 'muted-tag')}>
+            {settings.eqEnabled ? 'Equalizer enabled' : 'Equalizer bypassed'}
+          </div>
+          <div className="small muted" style={{ marginTop: 12 }}>
+            10-band EQ · Bass {Number(settings.eqBassBoost || 0) > 0 ? '+' : ''}{Number(settings.eqBassBoost || 0).toFixed(1)} dB
+          </div>
+          <div className="small muted" style={{ marginTop: 4 }}>
+            Treble {Number(settings.eqTreble || 0) > 0 ? '+' : ''}{Number(settings.eqTreble || 0).toFixed(1)} dB
+          </div>
+        </div>
+        <PathDiagram
+          fileActive={state.playing}
+          micActive={state.micEnabled}
+          monitorActive={settings.monitorEnabled}
+          outputLabel={outputs.find((device) => device.deviceId === settings.outputDeviceId)?.label || 'CABLE Input'}
+          monitorLabel={outputs.find((device) => device.deviceId === settings.monitorDeviceId)?.label || 'Monitor'}
+        />
       </div>
 
       {/* ─── Anti-duck processing ───────────────────────────────────── */}

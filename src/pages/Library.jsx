@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trash2, Play, Music, ChevronUp, ChevronDown, FolderPlus } from 'lucide-react';
+import { Trash2, Play, Music, ChevronUp, ChevronDown, FolderPlus, AudioLines } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
 import { usePlaylist } from '../context/PlaylistContext.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
@@ -106,7 +106,7 @@ export default function Library() {
   }
 
   return (
-    <div>
+    <div className="library-page">
       <PageHeader
         title="Music Library"
         subtitle={`${tracks.length} track${tracks.length === 1 ? '' : 's'}`}
@@ -141,8 +141,17 @@ export default function Library() {
           Playlist
         </h3>
         {tracks.length === 0 ? (
-          <div className="muted small" style={{ padding: 10 }}>
-            No tracks yet. Click <strong>Add files</strong> to start.
+          <div className="library-empty">
+            <div className="brand-icon"><AudioLines size={22} /></div>
+            <div>
+              <strong>Your playlist starts here</strong>
+              <div className="small muted" style={{ marginTop: 4 }}>
+                Add MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, or WEBM files.
+              </div>
+            </div>
+            <button className="btn primary" onClick={handleAdd}>
+              <FolderPlus size={14} /> Add your first track
+            </button>
           </div>
         ) : (
           <div className="list">
@@ -153,6 +162,7 @@ export default function Library() {
                 <div
                   key={t.id}
                   className={'list-item' + (isActive ? ' active' : '')}
+                  title={t.name}
                   style={fileMissing ? { opacity: 0.55 } : undefined}
                 >
                   <span className="mono small muted" style={{ width: 28 }}>

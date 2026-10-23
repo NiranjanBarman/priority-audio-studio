@@ -1,7 +1,7 @@
-# Voice Priority Audio
+# Voice Priority Audio Studio
 
-Voice Priority Audio is a Windows desktop app that mixes local music with a
-physical microphone and routes the combined audio to PC games through a
+Voice Priority Audio Studio is a Windows desktop app that mixes local music
+with a physical microphone and routes the combined audio to PC games through a
 virtual audio cable. Configure your game or Android emulator to use the cable's
 recording endpoint as its microphone.
 

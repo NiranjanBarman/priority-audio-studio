@@ -19,7 +19,7 @@ export default function PathDiagram({
         padding: '8px 10px',
         border: '1px solid ' + (active ? 'var(--accent)' : 'var(--border)'),
         borderRadius: 'var(--radius-sm)',
-        background: active ? 'rgba(139,92,246,0.12)' : 'var(--panel-2)',
+        background: active ? 'var(--accent-soft)' : 'var(--panel-2)',
         color: active ? 'var(--accent-2)' : 'var(--muted)',
         fontSize: 11,
         display: 'flex',

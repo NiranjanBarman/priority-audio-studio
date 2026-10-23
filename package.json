@@ -1,6 +1,6 @@
 {
   "name": "voice-priority-audio",
-  "version": "2.0.0",
+  "version": "2.3.1",
   "private": true,
   "description": "A loud, non-stop audio and microphone priority mixer for PC games.",
   "author": "Niranjan Barman",
@@ -31,7 +31,7 @@
   },
   "build": {
     "appId": "com.priorityaudio.studio",
-    "productName": "Voice Priority Audio",
+    "productName": "Voice Priority Audio Studio",
     "directories": {
       "output": "release",
       "buildResources": "assets"
@@ -69,7 +69,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Voice Priority Audio"
+      "shortcutName": "Voice Priority Audio Studio"
     }
   }
 }

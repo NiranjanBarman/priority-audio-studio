@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80"><rect width="320" height="80" rx="14" fill="#171421"/><path d="M28 25h8v30h-8zm14-8h8v46h-8zm14 14h8v18h-8z" fill="#a78bfa"/><text x="82" y="49" font-family="Arial" font-size="20" fill="#fff">Priority Audio</text></svg>\n
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" fill="none">
+  <rect width="420" height="96" rx="10" fill="#090909"/>
+  <path d="M48 9 83 29v38L48 87 13 67V29L48 9Z" fill="#151515" stroke="#FFB000" stroke-width="3"/>
+  <path d="M30 47h5v11h-5zm10-14h5v39h-5zm10 8h5v23h-5zm10-17h5v43h-5zm10 14h5v17h-5z" fill="#FFB000"/>
+  <path d="M100 31h3v34h-3zm6-9h3v52h-3zm6 9h3v34h-3z" fill="#A96D0A"/>
+  <text x="130" y="47" fill="#F5F3ED" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="1.8">VOICE PRIORITY</text>
+  <text x="130" y="69" fill="#B8B3A8" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="3.2">AUDIO STUDIO</text>
+</svg>

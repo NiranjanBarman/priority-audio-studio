@@ -76,7 +76,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 700,
     backgroundColor: '#111116',
-    title: 'Voice Priority Audio',
+    title: 'Voice Priority Audio Studio',
     show: false, // avoid white flash — show after ready-to-show
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

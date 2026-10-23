@@ -47,7 +47,7 @@ export default function Routing() {
   const allPassed = checks.every((c) => c.ok);
 
   return (
-    <div>
+    <div className="routing-page">
       <PageHeader
         title="Device Routing"
         subtitle="Select output device, verify CABLE, follow the checklist."
