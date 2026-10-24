@@ -127,7 +127,6 @@ export default function Equalizer() {
     <div className="equalizer-page">
       <PageHeader
         title="Equalizer"
-        subtitle="10-band graphic EQ + tone shaping + intentional distortion"
         actions={
           <>
             <button className="btn" onClick={handleReset}>
@@ -145,12 +144,10 @@ export default function Equalizer() {
           label="Enable equalizer"
           checked={enabled}
           onChange={(on) => setEnabled(on)}
-          description="When disabled, EQ is bypassed entirely (bit-transparent)."
         />
         {!engine.graph && (
           <div className="warn-block" style={{ marginTop: 10 }}>
-            Engine not started yet — settings are saved, but audio won't
-            change until you start the engine (Dashboard → Start Engine).
+            Start the engine to apply EQ.
           </div>
         )}
       </div>
@@ -240,10 +237,6 @@ export default function Equalizer() {
           disabled={!enabled}
           formatValue={(v) => `${v}%`}
         />
-        <div className="small muted" style={{ marginTop: 6 }}>
-          Per spec: loud priority over clean. Distortion makes music perceptually
-          louder without exceeding the limiter ceiling.
-        </div>
       </div>
 
       {savedPresets.length > 0 && (
@@ -258,15 +251,6 @@ export default function Equalizer() {
           </div>
         </div>
       )}
-
-      <div className="card">
-        <div className="small muted">
-          <strong>Status:</strong> Fully wired to the audio graph. Changes take
-          effect immediately when the engine is running. Settings persist across
-          reloads. The native C++ EQ (M3) uses the same parameters — when the
-          C++ engine is built, behavior is identical.
-        </div>
-      </div>
 
       {toast && (
         <Toast message={toast.message} level={toast.level} onClose={() => setToast(null)} />

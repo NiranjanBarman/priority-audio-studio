@@ -13,8 +13,7 @@ recording endpoint as its microphone.
   AAC, OPUS, and WEBM.
 - Keeps the playlist and absolute file paths across application restarts.
 - Mixes an optional physical microphone with music.
-- Offers Normal, Trash Mic (Distorted), and Walkie-Talkie (Radio) microphone
-  effects.
+- Offers Normal, Low-Fi Bass, and Creepy Horror microphone effects.
 - Processes music through an anti-duck chain; microphone audio uses a separate
   limiter so mic peaks do not trigger music gain reduction.
 - Can inject a quiet DTX tone to help prevent the game's VAD from cutting
@@ -54,6 +53,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\package-win.ps
 ```
 
 The Windows installer is written to `release`.
+
+Current release: **v2.4.0**.
 
 ## License
 

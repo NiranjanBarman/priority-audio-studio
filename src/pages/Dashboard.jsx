@@ -260,7 +260,6 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <PageHeader
         title="Audio Control Studio"
-        subtitle="Loud, non-stop music and microphone audio → virtual cable"
         actions={
           <button
             className={'btn ' + (ready ? '' : 'primary')}
@@ -276,29 +275,19 @@ export default function Dashboard() {
         <div className="status-card">
           <div className="status-card-label"><Cable size={13} /> Output device</div>
           <div className="status-card-value">{routedToCable ? 'VB-CABLE connected' : 'Output not routed'}</div>
-          <div className={'small ' + (routedToCable ? 'ok' : 'warn')}>
-            {routedToCable ? 'Ready for game input' : 'Select CABLE Input below'}
-          </div>
         </div>
         <div className="status-card">
           <div className="status-card-label"><Mic2 size={13} /> Microphone</div>
           <div className="status-card-value">{state.micEnabled ? 'Live input' : 'Disabled'}</div>
-          <div className="small muted">{state.micEnabled ? 'Mixed at Rank 2' : 'Enable to add mic audio'}</div>
         </div>
         <div className="status-card">
           <div className="status-card-label"><AudioWaveform size={13} /> Audio engine</div>
           <div className="status-card-value">{engine.ctx?.state === 'running' ? 'Running' : 'Standby'}</div>
-          <div className={'small ' + (engine.ctx?.state === 'running' ? 'ok' : 'muted')}>
-            {engine.ctx?.state === 'running' ? 'Processing audio' : 'Start when ready'}
-          </div>
         </div>
         <div className="status-card">
           <div className="status-card-label"><Activity size={13} /> Audio latency</div>
           <div className="status-card-value">
             {engine.ctx?.baseLatency ? `${(engine.ctx.baseLatency * 1000).toFixed(1)} ms` : '—'}
-          </div>
-          <div className="small muted">
-            {engine.ctx?.sampleRate ? `${engine.ctx.sampleRate} Hz sample rate` : 'Waiting for engine'}
           </div>
         </div>
         <div className="status-card">
@@ -386,23 +375,9 @@ export default function Dashboard() {
       </div>
         </div>
 
-      {/* ─── M2 microphone mixed after the music compressor ─────────── */}
         <div>
       <div className="card">
-        <h3 className="card-title">Microphone (M2)</h3>
-        <div className="row" style={{ gap: 16, marginBottom: 14 }}>
-          <span className="small">
-            <strong>Music: HIGH Priority (Rank 1)</strong>
-          </span>
-          <span className="small muted">
-            Mic: NORMAL Priority (Rank 2)
-          </span>
-        </div>
-        <div className="small muted" style={{ marginBottom: 12 }}>
-          Music and mic use separate processing paths, so mic peaks will not
-          turn the music down. Use headphones to keep game voices from leaking
-          into your physical mic; game-side processing can still affect the mix.
-        </div>
+        <h3 className="card-title">Microphone</h3>
         <div className="grid-2">
           <div>
             <Toggle
@@ -422,14 +397,14 @@ export default function Dashboard() {
               />
             </div>
             <label className="field" style={{ marginTop: 12 }}>
-              <span>Mic Voice Effect</span>
+              <span>Voice effect</span>
               <select
                 value={settings.micEffect || 'normal'}
                 onChange={handleMicEffectChange}
               >
                 <option value="normal">Normal</option>
-                <option value="distorted">Trash Mic (Distorted)</option>
-                <option value="radio">Walkie-Talkie (Radio)</option>
+                <option value="lowFiBass">Low-Fi Bass</option>
+                <option value="horror">Creepy Horror</option>
               </select>
             </label>
           </div>
@@ -541,9 +516,7 @@ export default function Dashboard() {
             label="DTX tone injector (-55 dBFS pink noise)"
             checked={settings.dtxEnabled}
             onChange={handleDtx}
-            description="Prevents the game's VAD from cutting transmission during quiet music."
           />
-          <span className="tag">Auto-ducking intentionally disabled</span>
         </div>
       </div>
 

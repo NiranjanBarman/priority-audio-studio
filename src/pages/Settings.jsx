@@ -9,6 +9,7 @@ import Toast from '../components/layout/Toast.jsx';
 import Toggle from '../components/controls/Toggle.jsx';
 import LogViewer from '../components/diagnostics/LogViewer.jsx';
 import StatsPanel from '../components/diagnostics/StatsPanel.jsx';
+import { APP_VERSION } from '../version.js';
 
 export default function Settings() {
   const { settings, set: setSetting, reset: resetSettings, saving } = useSettings();
@@ -73,7 +74,6 @@ export default function Settings() {
     <div className="settings-page">
       <PageHeader
         title="Settings"
-        subtitle="Diagnostics, logs, engine control, preferences"
         actions={
           <button
             className="btn"
@@ -111,7 +111,7 @@ export default function Settings() {
 
       {/* Native engine status */}
       <div className="card">
-        <h3 className="card-title">Native C++ engine (M2)</h3>
+        <h3 className="card-title">Native engine</h3>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <div>
             <div className="small">
@@ -139,9 +139,6 @@ export default function Settings() {
             <RefreshCw size={12} /> Reload addon
           </button>
         </div>
-        <div className="small muted" style={{ marginTop: 8 }}>
-          Build with: <span className="mono">scripts\build-native.ps1</span>
-        </div>
       </div>
 
       {/* Preferences */}
@@ -152,7 +149,6 @@ export default function Settings() {
             label="Launch on Windows startup"
             checked={!!settings.launchOnBoot}
             onChange={(on) => setSetting('launchOnBoot', on)}
-            description="Ships in M4. Currently a placeholder preference."
           />
           <div className="sep" />
           <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -176,9 +172,7 @@ export default function Settings() {
       <div className="card">
         <h3 className="card-title">Audio engine</h3>
         <div className="row" style={{ justifyContent: 'space-between' }}>
-          <div className="small muted">
-            Restart the Web Audio engine. All playback stops; subscriptions resume.
-          </div>
+          <div className="small muted">Playback stops while restarting.</div>
           <button
             className="btn"
             onClick={handleEngineRestart}
@@ -195,18 +189,8 @@ export default function Settings() {
       {/* About */}
       <div className="card">
         <h3 className="card-title">About</h3>
-        <div className="small muted" style={{ lineHeight: 1.8 }}>
-          <div><strong>Voice Priority Audio Studio</strong> v2.3.1</div>
-          <div>Priority music and microphone audio for PC games via a virtual audio cable.</div>
-          <div style={{ marginTop: 8 }}>
-            <strong>M1 scope:</strong> local file playback, anti-duck chain
-            (compressor + limiter + DTX), device routing, priority mixer UI,
-            EQ, full diagnostics.
-          </div>
-          <div style={{ marginTop: 4 }}>
-            <strong>M2+:</strong> native C++ WASAPI engine, system loopback,
-            mic capture, sample-rate auto-resample.
-          </div>
+        <div className="small muted">
+          <strong>Voice Priority Audio Studio</strong> v{APP_VERSION}
         </div>
       </div>
 

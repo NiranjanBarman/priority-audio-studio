@@ -80,7 +80,7 @@ export default function StatsPanel({ refreshHz = 1 }) {
       <Row
         icon={snap.nativeAvailable ? Zap : ZapOff}
         label="Native engine"
-        value={snap.nativeAvailable ? 'Ready' : 'Not built (M2)'}
+        value={snap.nativeAvailable ? 'Ready' : 'Not built'}
         color={snap.nativeAvailable ? 'var(--ok)' : 'var(--muted)'}
       />
       {snap.native && (

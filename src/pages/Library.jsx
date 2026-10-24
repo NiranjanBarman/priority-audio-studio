@@ -123,9 +123,7 @@ export default function Library() {
           <button className="btn primary" onClick={handleAdd}>
             <FolderPlus size={13} /> Add files
           </button>
-          <span className="small muted">
-            Supported: MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, WEBM
-          </span>
+          <span className="small muted">MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, WEBM</span>
         </div>
         {error && (
           <div className="row" style={{ marginTop: 10 }}>
@@ -145,9 +143,6 @@ export default function Library() {
             <div className="brand-icon"><AudioLines size={22} /></div>
             <div>
               <strong>Your playlist starts here</strong>
-              <div className="small muted" style={{ marginTop: 4 }}>
-                Add MP3, WAV, FLAC, OGG, M4A, AAC, OPUS, or WEBM files.
-              </div>
             </div>
             <button className="btn primary" onClick={handleAdd}>
               <FolderPlus size={14} /> Add your first track
@@ -212,16 +207,6 @@ export default function Library() {
             })}
           </div>
         )}
-      </div>
-
-      {/* Honest M1 note */}
-      <div className="card">
-        <div className="small muted">
-          <strong>Playlist note:</strong> File paths are saved on this device
-          and remain available across app restarts. If a file is moved or
-          deleted, remove it from the playlist and add it again from its new
-          location.
-        </div>
       </div>
 
       {toast && (

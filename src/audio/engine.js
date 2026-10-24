@@ -258,7 +258,6 @@ export class AudioEngine {
 
     try {
       await this.mic.start(deviceId);
-      this.mic.setGain(this.micGain);
       this._set({ micEnabled: true, micDeviceId: deviceId || '', error: null });
       log(`Microphone ON · ${deviceId || 'default input'}`);
     } catch (error) {
@@ -276,7 +275,7 @@ export class AudioEngine {
   }
 
   setMicEffect(effectName) {
-    if (!['normal', 'distorted', 'radio'].includes(effectName)) {
+    if (!['normal', 'lowFiBass', 'horror'].includes(effectName)) {
       throw new TypeError(`Unsupported microphone effect: ${effectName}`);
     }
     if (this.mic) this.mic.setEffect(effectName);
@@ -293,7 +292,7 @@ export class AudioEngine {
         this.monitorEl = null;
       }
       if (this.meters) this.meters.stop();
-      if (this.mic) this.mic.stop();
+      if (this.mic) this.mic.dispose();
       if (this.player) this.player.dispose();
       if (this.antiDuck) this.antiDuck.dispose();
       if (this.ctx) await this.ctx.close();

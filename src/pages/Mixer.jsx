@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Info, Music, Mic, Shield } from 'lucide-react';
+import { Music, Mic } from 'lucide-react';
 import { useAudioEngine } from '../hooks/useAudioEngine.js';
 import { useMeters } from '../hooks/useMeters.js';
 import { useSettings } from '../hooks/useSettings.js';
@@ -16,8 +16,8 @@ export default function Mixer() {
   const [toast, setToast] = useState(null);
 
   const [sources, setSources] = useState({
-    music:  { rank: 1, label: 'Music', gain: settings.volume, muted: false, solo: false, active: true,  milestone: 'M1' },
-    mic:    { rank: 2, label: 'Microphone', gain: engine.micGain, muted: false, solo: false, active: state.micEnabled, milestone: 'M2' }
+    music:  { rank: 1, label: 'Music', gain: settings.volume, muted: false, solo: false, active: true },
+    mic:    { rank: 2, label: 'Microphone', gain: engine.micGain, muted: false, solo: false, active: state.micEnabled }
   });
 
   useEffect(() => {
@@ -87,19 +87,10 @@ export default function Mixer() {
     [sources]
   );
 
-  const anySolo = stripData.some((s) => s.solo);
-
   return (
     <div className="mixer-page">
       <PageHeader
         title="Audio Mixer"
-        subtitle="Rank 1 always wins. No auto-ducking."
-        actions={
-          <span className="tag">
-            <Shield size={11} style={{ marginRight: 4 }} />
-            Anti-duck enforced
-          </span>
-        }
       />
 
       <div className="card">
@@ -109,14 +100,6 @@ export default function Mixer() {
           onMuteToggle={handleMute}
           onSoloToggle={handleSolo}
         />
-        {anySolo && (
-          <div className="row" style={{ marginTop: 10 }}>
-            <Info size={12} color="var(--accent-2)" />
-            <span className="small muted">
-              Solo active — only soloed sources will be audible.
-            </span>
-          </div>
-        )}
       </div>
 
       <div className="grid-3">
@@ -134,7 +117,6 @@ export default function Mixer() {
               <div className="row" style={{ gap: 6 }}>
                 {s.key === 'music' && <Music size={13} />}
                 {s.key === 'mic' && <Mic size={13} />}
-                <span className="small muted">{s.milestone}</span>
               </div>
               <PriorityRank rank={s.rank} />
             </div>
@@ -150,44 +132,8 @@ export default function Mixer() {
               onMuteToggle={() => handleMute(s.key)}
               onSoloToggle={() => handleSolo(s.key)}
             />
-            {!s.active && (
-              <div
-                className="small muted"
-                style={{
-                  position: 'absolute',
-                  top: 6,
-                  right: 6,
-                  padding: '2px 8px',
-                  background: 'var(--panel-2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 4,
-                  fontSize: 10
-                }}
-              >
-                {s.milestone}
-              </div>
-            )}
           </div>
         ))}
-      </div>
-
-      <div className="card">
-        <h3 className="card-title">How priority works</h3>
-        <ul className="small muted" style={{ lineHeight: 1.9, paddingLeft: 20 }}>
-          <li>
-            <strong>Rank 1 (Music)</strong> — highest priority. Never ducks, never
-            scales down, never goes silent against lower-rank sources.
-          </li>
-          <li>
-            <strong>Rank 2 (Microphone)</strong> — mixed alongside music without
-            reducing the Rank 1 music level.
-          </li>
-          <li>
-            <strong>No auto-ducking:</strong> there is no code path anywhere in
-            this app that reduces music gain based on other sources or game activity
-            activity.
-          </li>
-        </ul>
       </div>
 
       {toast && (

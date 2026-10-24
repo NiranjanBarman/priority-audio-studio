@@ -50,7 +50,6 @@ export default function Routing() {
     <div className="routing-page">
       <PageHeader
         title="Device Routing"
-        subtitle="Select output device, verify CABLE, follow the checklist."
         actions={
           <button className="btn" onClick={refresh} disabled={loading}>
             <RefreshCw size={12} /> {loading ? 'Scanning…' : 'Refresh devices'}
@@ -69,7 +68,7 @@ export default function Routing() {
         <h3 className="card-title">Output selection</h3>
         <div className="grid-2">
           <DeviceSelect
-            label="Playback (target = CABLE Input)"
+            label="Playback output"
             devices={outputs}
             value={settings.outputDeviceId}
             onChange={handleOutputChange}
@@ -78,7 +77,7 @@ export default function Routing() {
             emptyLabel="— Windows default —"
           />
           <DeviceSelect
-            label="Monitor (optional, M4)"
+            label="Monitor"
             devices={outputs}
             value={settings.monitorDeviceId}
             onChange={(id) => setSetting('monitorDeviceId', id)}
@@ -148,26 +147,13 @@ export default function Routing() {
       </div>
 
       <div className="card">
-        <h3 className="card-title">Android Emulator / Game setup checklist</h3>
+        <h3 className="card-title">VB-CABLE setup</h3>
         <ol className="small" style={{ lineHeight: 1.9, paddingLeft: 20 }}>
-          <li>Install VB-CABLE from <span className="mono">{CABLE_DOWNLOAD_URL}</span> → reboot.</li>
-          <li>Windows Sound → Playback tab shows <span className="mono">CABLE Input</span>.</li>
-          <li>Windows Sound → Recording tab shows <span className="mono">CABLE Output</span>.</li>
-          <li>Set both CABLE devices to <strong>same sample rate</strong> — Windows Sound → Properties → Advanced → <span className="mono">48000 Hz, 24-bit</span>.</li>
-          <li>In this app: Dashboard → Output = <span className="mono">CABLE Input</span>.</li>
-          <li>In your Android Emulator / Game audio settings, set the microphone input to <span className="mono">CABLE Output</span>.</li>
-          <li>Restart the game or emulator to apply the microphone change if needed.</li>
-          <li>In the game's voice settings, adjust chat volume and disable noise suppression or automatic mic gain if they interfere with your mix.</li>
+          <li>Install <a href={CABLE_DOWNLOAD_URL} target="_blank" rel="noreferrer">VB-CABLE</a> and restart Windows.</li>
+          <li>Set this app's output to <span className="mono">CABLE Input</span>.</li>
+          <li>Set the game microphone to <span className="mono">CABLE Output</span>.</li>
+          <li>Use the same sample rate for both CABLE devices.</li>
         </ol>
-      </div>
-
-      <div className="card" style={{ borderColor: 'var(--warn)' }}>
-        <h3 className="card-title" style={{ color: 'var(--warn)' }}>Honest limitations</h3>
-        <ul className="small muted" style={{ lineHeight: 1.9, paddingLeft: 20 }}>
-          <li><strong>Game-side control is limited.</strong> If a game or its server attenuates your microphone, this app cannot override that behavior.</li>
-          <li><strong>Sample rate mismatch is the #1 cause of crackle.</strong> Set both CABLE devices to identical rates.</li>
-          <li><strong>Electron cannot create a virtual mic.</strong> VB-CABLE is the bridge — that's a Windows driver concern, not an app concern.</li>
-        </ul>
       </div>
 
       {toast && (
